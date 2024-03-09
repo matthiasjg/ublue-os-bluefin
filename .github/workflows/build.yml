@@ -151,6 +151,7 @@ jobs:
         id: labels
         shell: bash
         run: |
+          export REGISTRY_AUTH_FILE=$HOME/auth.json
           set -eo pipefail
           ver=$(skopeo inspect docker://ghcr.io/ublue-os/silverblue-${{ matrix.image_flavor }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
           if [ -z "$ver" ] || [ "null" = "$ver" ]; then
