@@ -129,12 +129,12 @@ garden:
     #!/usr/bin/env bash
     if ! command -v garden &> /dev/null; then
         ASSET_URL=$(curl -s https://api.github.com/repos/garden-io/garden/releases/latest | \
-            jq -r '.assets[] | select(.browser_download_url | test("linux-amd64.tar.gz$")) | .browser_download_url')
+            jq -r '.assets[] | select(.browser_download_url | test("linux-arm64.tar.gz$")) | .browser_download_url')
         GARDEN_DIR="${HOME}/.garden/bin"
         TMP_DIR=$(mktemp -d)
         curl -sSL "$ASSET_URL" | tar -xz -C "$TMP_DIR"
         mkdir -p "$GARDEN_DIR"
-        mv "$TMP_DIR"/linux-amd64/garden "$GARDEN_DIR"
+        mv "$TMP_DIR"/linux-arm64/garden "$GARDEN_DIR"
         rm -rf "$TMP_DIR"
 
         echo ""

@@ -73,7 +73,7 @@ Description=Restart ${i}.service to rebuild container
 
 [Service]
 Type=oneshot
-ExecStart=-/usr/bin/podman pull ghcr.io/ublue-os/${i}:latest
+ExecStart=-/usr/bin/podman pull ghcr.io/matthiasjg/${i}:latest
 ExecStart=-/usr/bin/systemctl --user restart ${i}.service
 EOF
 

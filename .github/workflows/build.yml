@@ -1,18 +1,20 @@
 name: Build and Push Image
 on:
-  schedule:
-    - cron: '40 16 * * *'  # 16:40 UTC everyday
+  # schedule:
+  #   - cron: '40 16 * * *'  # 16:40 UTC everyday
   merge_group:
   pull_request:
     branches:
       - main
       - testing
+      - aarch64-x13s
     paths-ignore:
       - '**.md'
   push:
     branches:
       - main
       - testing
+      - aarch64-x13s
     paths-ignore:
       - '**.md'
   workflow_dispatch:
@@ -26,7 +28,8 @@ concurrency:
 jobs:
   push-ghcr:
     name: Make
-    runs-on: ubuntu-22.04
+    # runs-on: ubuntu-22.04
+    runs-on: buildjet-4vcpu-ubuntu-2204-arm
     permissions:
       contents: read
       packages: write
@@ -47,6 +50,14 @@ jobs:
             is_stable_version: true
             is_gts_version: false
     steps:
+      # Install system dependencies missing in the buildjet-4vcpu-ubuntu-2204-arm runner
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo
+          sudo apt-get install -y buildah
+          sudo apt-get install -y podman
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -230,6 +241,7 @@ jobs:
           TAGS: ${{ steps.push.outputs.digest }}
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+          COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}
 
       - name: Echo outputs
         if: github.event_name != 'pull_request'
@@ -239,7 +251,8 @@ jobs:
   check:
     name: Check all builds successful
     if: ${{ !cancelled() }}
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-22.04
+    runs-on: buildjet-4vcpu-ubuntu-2204-arm
     needs: [push-ghcr]
     steps:
       - name: Exit on failure
