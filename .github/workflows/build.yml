@@ -188,6 +188,7 @@ jobs:
         env:
           REGISTRY_USER: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ github.token }}
+          REGISTRY_AUTH_FILE: $HOME/auth.json
         with:
           registry: ${{ steps.registry_case.outputs.lowercase }}
           username: ${{ env.REGISTRY_USER }}
@@ -197,6 +198,8 @@ jobs:
       - name: Build Image
         id: build_image
         uses: redhat-actions/buildah-build@v2
+        env:
+          REGISTRY_AUTH_FILE: $HOME/auth.json
         with:
           containerfiles: |
             ./Containerfile
